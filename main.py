@@ -17,9 +17,11 @@ fig = figure(figsize=(9, 4), dpi=80)
 barnet_gdf = gpd.read_file("https://mapit.mysociety.org/area/2489.geojson")
 gdf = gpd.read_file('data/London_Ward.shp')
 
-df2020 = pd.read_csv('data/2020-crime-data.csv')
-df2021 = pd.read_csv('data/2021-crime-data.csv')
-df2022 = pd.read_csv('data/2022-crime-data.csv')
+df2020 = pd.read_csv('data/edited/2020-crime-data.csv')
+df2021 = pd.read_csv('data/edited/2021-crime-data.csv')
+df2022 = pd.read_csv('data/edited/2022-crime-data.csv')
+
+
 
 # Combine the dataframes into a single dataframe
 df_all = pd.concat([df2020, df2021, df2022])
@@ -29,13 +31,21 @@ burglary_counts = []
 for df in [df2020, df2021, df2022]:
     burglary_counts.append(df[df['Crime type'] == 'Burglary'].shape[0])
 
-import plotly.graph_objs as go
-
 data = [go.Bar(x=['2020', '2021', '2022'], y=burglary_counts)]
 
 layout = go.Layout(title='Burglary Occurrences by Year', xaxis_title='Year', yaxis_title='Number of Occurrences')
 
 fig = go.Figure(data=data, layout=layout)
+
+
+
+# Count the number of occurrences of each crime type
+crime_counts = df2020['Crime type'].value_counts()
+
+# Create a bar chart using Plotly
+# fig = px.bar(crime_counts, x=crime_counts.index, y=crime_counts.values)
+
+
 
 
 # df = df122.drop(columns=['Context'])
@@ -76,10 +86,7 @@ fig = go.Figure(data=data, layout=layout)
 
 # if __name__ == '__main__':
 #     app.run_server(debug=True)
-# Count the number of occurrences of each crime type
-# crime_counts = df['Crime type'].value_counts()
-#
-# fig = px.bar(crime_counts, x=crime_counts.index, y=crime_counts.values)
-#
-# # Print the result
+
+
+# Print the result
 print(fig.show())
