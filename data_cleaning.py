@@ -18,7 +18,7 @@ import pandas as pd
 # df2022 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
 #
 # # Define the path to the data folder
-data_folder = 'data'
+data_folder = '/volumes/Seagate DNvG/School/dc2/data'
 #
 # If the data folder doesn't exist, create it
 if not os.path.exists(data_folder):
@@ -30,40 +30,54 @@ if not os.path.exists(data_folder):
 # # Save the DataFrame to a CSV file in the data folder
 # df2022.to_csv(output_file, index=False)
 #
-df1 = pd.read_csv('data/2021/2021-01/2021-01-metropolitan-street.csv')
-df2 = pd.read_csv('data/2021/2021-02/2021-02-metropolitan-street.csv')
-df3 = pd.read_csv('data/2021/2021-03/2021-03-metropolitan-street.csv')
-df4 = pd.read_csv('data/2021/2021-04/2021-04-metropolitan-street.csv')
-df5 = pd.read_csv('data/2021/2021-05/2021-05-metropolitan-street.csv')
-df6 = pd.read_csv('data/2021/2021-06/2021-06-metropolitan-street.csv')
-df7 = pd.read_csv('data/2021/2021-07/2021-07-metropolitan-street.csv')
-df8 = pd.read_csv('data/2021/2021-08/2021-08-metropolitan-street.csv')
-df9 = pd.read_csv('data/2021/2021-09/2021-09-metropolitan-street.csv')
-df10 = pd.read_csv('data/2021/2021-10/2021-10-metropolitan-street.csv')
-df11 = pd.read_csv('data/2021/2021-11/2021-11-metropolitan-street.csv')
-df12 = pd.read_csv('data/2021/2021-12/2021-12-metropolitan-street.csv')
+# data saved on external drive
+for year in [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]:
+    df_dict = {}
+    for month in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']:
+        if os.path.exists('{0}/{1}/{1}-{2}/{1}-{2}-metropolitan-street.csv'.format(data_folder, year, month)):
+            df_dict['{}-{}'.format(year, month)] = pd.read_csv(
+                '{0}/{1}/{1}-{2}/{1}-{2}-metropolitan-street.csv'.format(data_folder, year, month))
+        else:
+            print("{}-{} doesn't exist".format(year, month)) # test
+    df_year = pd.concat(df_dict.values())
+    output_file = os.path.join(data_folder, '{}-crime-data.csv'.format(year))
+    df_year.to_csv(output_file, index=False)
+
+
+# df1 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-01/2021-01-metropolitan-street.csv')
+# df2 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-02/2021-02-metropolitan-street.csv')
+# df3 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-03/2021-03-metropolitan-street.csv')
+# df4 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-04/2021-04-metropolitan-street.csv')
+# df5 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-05/2021-05-metropolitan-street.csv')
+# df6 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-06/2021-06-metropolitan-street.csv')
+# df7 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-07/2021-07-metropolitan-street.csv')
+# df8 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-08/2021-08-metropolitan-street.csv')
+# df9 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-09/2021-09-metropolitan-street.csv')
+# df10 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-10/2021-10-metropolitan-street.csv')
+# df11 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-11/2021-11-metropolitan-street.csv')
+# df12 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021/2021-12/2021-12-metropolitan-street.csv')
 # Combine the monthly dataframes into one
-df2021 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
-output_file = os.path.join(data_folder, '2021-crime-data.csv')
+# df2021 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
+# output_file = os.path.join(data_folder, '2021-crime-data.csv')
 
 # Save the DataFrame to a CSV file in the data folder
-df2021.to_csv(output_file, index=False)
+# df2021.to_csv(output_file, index=False)
 
-df1 = pd.read_csv('data/2020/2020-01/2020-01-metropolitan-street.csv')
-df2 = pd.read_csv('data/2020/2020-02/2020-02-metropolitan-street.csv')
-df3 = pd.read_csv('data/2020/2020-03/2020-03-metropolitan-street.csv')
-df4 = pd.read_csv('data/2020/2020-04/2020-04-metropolitan-street.csv')
-df5 = pd.read_csv('data/2020/2020-05/2020-05-metropolitan-street.csv')
-df6 = pd.read_csv('data/2020/2020-06/2020-06-metropolitan-street.csv')
-df7 = pd.read_csv('data/2020/2020-07/2020-07-metropolitan-street.csv')
-df8 = pd.read_csv('data/2020/2020-08/2020-08-metropolitan-street.csv')
-df9 = pd.read_csv('data/2020/2020-09/2020-09-metropolitan-street.csv')
-df10 = pd.read_csv('data/2020/2020-10/2020-10-metropolitan-street.csv')
-df11 = pd.read_csv('data/2020/2020-11/2020-11-metropolitan-street.csv')
-df12 = pd.read_csv('data/2020/2020-12/2020-12-metropolitan-street.csv')
+# df1 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-01/2020-01-metropolitan-street.csv')
+# df2 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-02/2020-02-metropolitan-street.csv')
+# df3 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-03/2020-03-metropolitan-street.csv')
+# df4 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-04/2020-04-metropolitan-street.csv')
+# df5 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-05/2020-05-metropolitan-street.csv')
+# df6 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-06/2020-06-metropolitan-street.csv')
+# df7 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-07/2020-07-metropolitan-street.csv')
+# df8 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-08/2020-08-metropolitan-street.csv')
+# df9 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-09/2020-09-metropolitan-street.csv')
+# df10 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-10/2020-10-metropolitan-street.csv')
+# df11 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-11/2020-11-metropolitan-street.csv')
+# df12 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020/2020-12/2020-12-metropolitan-street.csv')
 # Combine the monthly dataframes into one
-df2020 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
-output_file = os.path.join(data_folder, '2020-crime-data.csv')
+# df2020 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
+# output_file = os.path.join(data_folder, '2020-crime-data.csv')
 
 # Save the DataFrame to a CSV file in the data folder
-df2020.to_csv(output_file, index=False)
+# df2020.to_csv(output_file, index=False)
