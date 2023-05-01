@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # link for lsoa file: https://geoportal.statistics.gov.uk/datasets/ons::lsoa-dec-2001-ew-bfe/explore
 # df_lsoa = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/LSOA_Dec_2001_EW_BFE_2022_8669009712396117932.csv')
@@ -39,4 +40,19 @@ for month in sorted(set(barnet_df['Month'].values)):
 
 plt.bar(range(len(barnet_mdict)), list(barnet_mdict.values()), tick_label=list(barnet_mdict.keys()))
 plt.title('Crimes in Barnet per month');
+plt.show()
+
+# heatmap that shows crime percentage in Barnet for each LSOA per month
+
+# dictionary with, for each lsoa, another dictionary for each month
+barnet_ldict = {}
+for lsoa in sorted(set(barnet_df['LSOA name'].values)):
+    barnet_lmdict = {}
+    for month in sorted(set(barnet_df['Month'].values)):
+        barnet_lmdict[month] = (barnet_df[(barnet_df['Month'] == month) & (barnet_df['LSOA name'] == lsoa)].shape[0]) \
+                               / barnet_mdict[month]
+    barnet_ldict[lsoa] = barnet_lmdict
+barnet_ldf = pd.DataFrame.from_dict(barnet_ldict) # convert to df for heatmap
+
+sns.heatmap(barnet_ldf, annot=True)
 plt.show()
