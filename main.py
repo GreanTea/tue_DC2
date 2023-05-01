@@ -15,28 +15,43 @@ now = datetime.now()
 fig = figure(figsize=(9, 4), dpi=80)
 
 barnet_gdf = gpd.read_file("https://mapit.mysociety.org/area/2489.geojson")
-gdf = gpd.read_file('data/London_Ward.shp')
+# where does this file come from ?
+# gdf = gpd.read_file('../Seagate DNvG/School/dc2/data/London_Ward.shp')
 
-df2020 = pd.read_csv('data/2020-crime-data.csv')
-df2021 = pd.read_csv('data/2021-crime-data.csv')
-df2022 = pd.read_csv('data/2022-crime-data.csv')
+df2010 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2010-crime-data.csv')
+df2011 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2011-crime-data.csv')
+df2012 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2012-crime-data.csv')
+df2013 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2012-crime-data.csv')
+df2014 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2013-crime-data.csv')
+df2015 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2014-crime-data.csv')
+df2015 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2015-crime-data.csv')
+df2016 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2016-crime-data.csv')
+df2017 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2017-crime-data.csv')
+df2018 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2018-crime-data.csv')
+df2019 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2019-crime-data.csv')
+df2020 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2020-crime-data.csv')
+df2021 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2021-crime-data.csv')
+df2022 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2022-crime-data.csv')
+df2023 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2023-crime-data.csv')
 
 # Combine the dataframes into a single dataframe
-df_all = pd.concat([df2020, df2021, df2022])
+df_all = pd.concat([df2010, df2011, df2012, df2013, df2014, df2015, df2016, df2017, df2018, df2019, df2020, df2021,
+                    df2022, df2023])
 df_all["Year"] = df_all["Month"].str.split("-").str[0]
 # Create a bar chart comparing the number of burglaries across the years
 burglary_counts = []
-for df in [df2020, df2021, df2022]:
+for df in [df2010, df2011, df2012, df2013, df2014, df2015, df2016, df2017, df2018, df2019, df2020, df2021,
+           df2022, df2023]:
     burglary_counts.append(df[df['Crime type'] == 'Burglary'].shape[0])
 
 import plotly.graph_objs as go
 
-data = [go.Bar(x=['2020', '2021', '2022'], y=burglary_counts)]
+data = [go.Bar(x=['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021',
+                  '2022', '2023'], y=burglary_counts)]
 
 layout = go.Layout(title='Burglary Occurrences by Year', xaxis_title='Year', yaxis_title='Number of Occurrences')
 
 fig = go.Figure(data=data, layout=layout)
-
 
 # df = df122.drop(columns=['Context'])
 # df = df122.dropna()
