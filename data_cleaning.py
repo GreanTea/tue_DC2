@@ -1,69 +1,87 @@
 import os
 import pandas as pd
+import fnmatch
+import shutil
+
+# Set the directory containing the folders of CSV files
+root_directory = 'data/all'
+outcomes_dir = 'data/all/outcomes'
+stop_dir = 'data/all/stop'
+street_dir = 'data/all/street'
 
 
-# df1 = pd.read_csv('data/2022/2022-01/2022-01-metropolitan-street.csv')
-# df2 = pd.read_csv('data/2022/2022-02/2022-02-metropolitan-street.csv')
-# df3 = pd.read_csv('data/2022/2022-03/2022-03-metropolitan-street.csv')
-# df4 = pd.read_csv('data/2022/2022-04/2022-04-metropolitan-street.csv')
-# df5 = pd.read_csv('data/2022/2022-05/2022-05-metropolitan-street.csv')
-# df6 = pd.read_csv('data/2022/2022-06/2022-06-metropolitan-street.csv')
-# df7 = pd.read_csv('data/2022/2022-07/2022-07-metropolitan-street.csv')
-# df8 = pd.read_csv('data/2022/2022-08/2022-08-metropolitan-street.csv')
-# df9 = pd.read_csv('data/2022/2022-09/2022-09-metropolitan-street.csv')
-# df10 = pd.read_csv('data/2022/2022-10/2022-10-metropolitan-street.csv')
-# df11 = pd.read_csv('data/2022/2022-11/2022-11-metropolitan-street.csv')
-# df12 = pd.read_csv('data/2022/2022-12/2022-12-metropolitan-street.csv')
-# # Combine the monthly dataframes into one
-# df2022 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
-#
-# # Define the path to the data folder
-data_folder = 'data'
-#
-# If the data folder doesn't exist, create it
-if not os.path.exists(data_folder):
-    os.makedirs(data_folder)
-#
-# # Define the path to the output file
-# output_file = os.path.join(data_folder, '2022-crime-data.csv')
-#
-# # Save the DataFrame to a CSV file in the data folder
-# df2022.to_csv(output_file, index=False)
-#
-df1 = pd.read_csv('data/2021/2021-01/2021-01-metropolitan-street.csv')
-df2 = pd.read_csv('data/2021/2021-02/2021-02-metropolitan-street.csv')
-df3 = pd.read_csv('data/2021/2021-03/2021-03-metropolitan-street.csv')
-df4 = pd.read_csv('data/2021/2021-04/2021-04-metropolitan-street.csv')
-df5 = pd.read_csv('data/2021/2021-05/2021-05-metropolitan-street.csv')
-df6 = pd.read_csv('data/2021/2021-06/2021-06-metropolitan-street.csv')
-df7 = pd.read_csv('data/2021/2021-07/2021-07-metropolitan-street.csv')
-df8 = pd.read_csv('data/2021/2021-08/2021-08-metropolitan-street.csv')
-df9 = pd.read_csv('data/2021/2021-09/2021-09-metropolitan-street.csv')
-df10 = pd.read_csv('data/2021/2021-10/2021-10-metropolitan-street.csv')
-df11 = pd.read_csv('data/2021/2021-11/2021-11-metropolitan-street.csv')
-df12 = pd.read_csv('data/2021/2021-12/2021-12-metropolitan-street.csv')
-# Combine the monthly dataframes into one
-df2021 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
-output_file = os.path.join(data_folder, '2021-crime-data.csv')
+def clean_datasets(path):
+    temp_filepath = os.path.join(path, "cleaned")
+    if not os.path.exists(temp_filepath):
+        os.makedirs(temp_filepath)
 
-# Save the DataFrame to a CSV file in the data folder
-df2021.to_csv(output_file, index=False)
+        for filename in os.listdir(path):
+            if filename.endswith(".csv"):
+                filepath = os.path.join(path, filename)
 
-df1 = pd.read_csv('data/2020/2020-01/2020-01-metropolitan-street.csv')
-df2 = pd.read_csv('data/2020/2020-02/2020-02-metropolitan-street.csv')
-df3 = pd.read_csv('data/2020/2020-03/2020-03-metropolitan-street.csv')
-df4 = pd.read_csv('data/2020/2020-04/2020-04-metropolitan-street.csv')
-df5 = pd.read_csv('data/2020/2020-05/2020-05-metropolitan-street.csv')
-df6 = pd.read_csv('data/2020/2020-06/2020-06-metropolitan-street.csv')
-df7 = pd.read_csv('data/2020/2020-07/2020-07-metropolitan-street.csv')
-df8 = pd.read_csv('data/2020/2020-08/2020-08-metropolitan-street.csv')
-df9 = pd.read_csv('data/2020/2020-09/2020-09-metropolitan-street.csv')
-df10 = pd.read_csv('data/2020/2020-10/2020-10-metropolitan-street.csv')
-df11 = pd.read_csv('data/2020/2020-11/2020-11-metropolitan-street.csv')
-df12 = pd.read_csv('data/2020/2020-12/2020-12-metropolitan-street.csv')
-# Combine the monthly dataframes into one
-df2020 = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12])
-output_file = os.path.join(data_folder, '2020-crime-data.csv')
+                # Load CSV file into a Pandas DataFrame
+                df = pd.read_csv(filepath)
+                df = df.fillna(value='')
 
-# Save the DataFrame to a CSV file in the data folder
-df2020.to_csv(output_file, index=False)
+                # Remove rows where "LSOA name" column does not contain "Barnet"
+                df = df[df["LSOA name"].str.contains("Barnet")]
+
+                # Save cleaned data to a new CSV file
+                cleaned_filename = f"cleaned_{filename}"
+                cleaned_filepath = os.path.join(temp_filepath, cleaned_filename)
+                df.to_csv(cleaned_filepath, index=False)
+    else:
+        print("Cleaned directory already exists, skipping loop.")
+
+    # Initialize an empty DataFrame to store the merged data
+    df_merged = pd.DataFrame()
+
+    # Loop through each file in the directory
+    for filename in os.listdir(temp_filepath):
+        if filename.endswith(".csv"):
+            filepath = os.path.join(temp_filepath, filename)
+
+            # Load CSV file into a Pandas DataFrame
+            df_temp = pd.read_csv(filepath)
+
+            # Append the DataFrame to the merged DataFrame
+            df_merged = pd.concat([df_merged, df_temp])
+            df_merged = df_merged.drop_duplicates()
+
+    # Save the merged DataFrame to a new CSV file
+    output_filepath = os.path.join(temp_filepath, "cleaned.csv")
+    df_merged.to_csv(output_filepath, index=False)
+    return
+
+
+def separate(path):
+    # Loop through all the directories in the root directory
+    for dirpath, dirnames, filenames in os.walk(path):
+        # Find all CSV files in the directory
+        csv_files = fnmatch.filter(filenames, '*.csv')
+
+        # Loop through the CSV files and remove the ones that don't contain 'metropolitan'
+        for file in csv_files:
+            if 'metropolitan' not in file:
+                os.remove(os.path.join(dirpath, file))
+
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            # Check if the file is a CSV file
+            if file.endswith('.csv'):
+                # Check if the filename contains 'outcomes', 'stop', or 'street'
+                if 'outcomes' in file:
+                    # Move the file to the outcomes directory
+                    shutil.move(os.path.join(root, file), os.path.join(outcomes_dir, file))
+                elif 'stop' in file:
+                    # Move the file to the stop directory
+                    shutil.move(os.path.join(root, file), os.path.join(stop_dir, file))
+                elif 'street' in file:
+                    # Move the file to the street directory
+                    shutil.move(os.path.join(root, file), os.path.join(street_dir, file))
+    return
+
+
+separate(root_directory)
+clean_datasets(outcomes_dir)
+clean_datasets(street_dir)
