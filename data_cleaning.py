@@ -9,8 +9,7 @@ outcomes_dir = 'data/all/outcomes'
 stop_dir = 'data/all/stop'
 street_dir = 'data/all/street'
 
-
-def clean_datasets(path):
+def clean_ocstr(path):
     temp_filepath = os.path.join(path, "cleaned")
     if not os.path.exists(temp_filepath):
         os.makedirs(temp_filepath)
@@ -25,7 +24,6 @@ def clean_datasets(path):
 
                 # Remove rows where "LSOA name" column does not contain "Barnet"
                 df = df[df["LSOA name"].str.contains("Barnet")]
-
                 # Save cleaned data to a new CSV file
                 cleaned_filename = f"cleaned_{filename}"
                 cleaned_filepath = os.path.join(temp_filepath, cleaned_filename)
@@ -53,6 +51,49 @@ def clean_datasets(path):
     df_merged.to_csv(output_filepath, index=False)
     return
 
+def clean_stop(path):
+    temp_filepath = os.path.join(path, "cleaned")
+    if not os.path.exists(temp_filepath):
+        os.makedirs(temp_filepath)
+
+        for filename in os.listdir(path):
+            if filename.endswith(".csv"):
+                filepath = os.path.join(path, filename)
+
+                # Load CSV file into a Pandas DataFrame
+                df = pd.read_csv(filepath)
+                df = df.fillna(value='')
+
+                # Remove rows where "Legislation" column does not contain "Police and Criminal Evidence Act 1984 (
+                # section 1)"
+                df = df[df["Object of search"].str.contains("Stolen")]
+                df = df[~df["Outcome"].str.contains("further")]
+                # Save cleaned data to a new CSV file
+                cleaned_filename = f"cleaned_{filename}"
+                cleaned_filepath = os.path.join(temp_filepath, cleaned_filename)
+                df.to_csv(cleaned_filepath, index=False)
+    else:
+        print("Cleaned directory already exists, skipping loop.")
+
+    # Initialize an empty DataFrame to store the merged data
+    df_merged = pd.DataFrame()
+
+    # Loop through each file in the directory
+    for filename in os.listdir(temp_filepath):
+        if filename.endswith(".csv"):
+            filepath = os.path.join(temp_filepath, filename)
+
+            # Load CSV file into a Pandas DataFrame
+            df_temp = pd.read_csv(filepath)
+
+            # Append the DataFrame to the merged DataFrame
+            df_merged = pd.concat([df_merged, df_temp])
+            df_merged = df_merged.drop_duplicates()
+
+    # Save the merged DataFrame to a new CSV file
+    output_filepath = os.path.join(temp_filepath, "cleaned.csv")
+    df_merged.to_csv(output_filepath, index=False)
+    return
 
 def separate(path):
     # Loop through all the directories in the root directory
@@ -82,6 +123,7 @@ def separate(path):
     return
 
 
-separate(root_directory)
-clean_datasets(outcomes_dir)
-clean_datasets(street_dir)
+# separate(root_directory)
+# clean_ocstr(outcomes_dir)
+clean_stop(stop_dir)
+# clean_ocstr(street_dir)
