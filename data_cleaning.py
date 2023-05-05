@@ -38,9 +38,13 @@ def clean_ocstr(path):
     for filename in os.listdir(temp_filepath):
         if filename.endswith(".csv"):
             filepath = os.path.join(temp_filepath, filename)
-
+            print()
             # Load CSV file into a Pandas DataFrame
-            df_temp = pd.read_csv(filepath)
+            try:
+                df_temp = pd.read_csv(filepath)
+            except pd.errors.EmptyDataError:
+                df_temp= pd.DataFrame()
+                print(filepath, " is empty and has been skipped.")
 
             # Append the DataFrame to the merged DataFrame
             df_merged = pd.concat([df_merged, df_temp])
@@ -124,6 +128,6 @@ def separate(path):
 
 
 # separate(root_directory)
-# clean_ocstr(outcomes_dir)
-clean_stop(stop_dir)
-# clean_ocstr(street_dir)
+clean_ocstr(outcomes_dir)
+#clean_stop(stop_dir)
+#clean_ocstr(street_dir)
