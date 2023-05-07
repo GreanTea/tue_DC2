@@ -127,7 +127,7 @@ def separate(path):
     return
 
 
-# separate(root_directory)
-clean_ocstr(outcomes_dir)
+separate(street_dir)
+#clean_ocstr(outcomes_dir)
 #clean_stop(stop_dir)
 #clean_ocstr(street_dir)

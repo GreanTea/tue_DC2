@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91d9a7bb-b6a5-4976-b3dd-b34925c2df07" name="Changes" comment="">
+    <list default="true" id="91d9a7bb-b6a5-4976-b3dd-b34925c2df07" name="Changes" comment="Added a counter to check whether the amount of burglaries in 2019 were actually less">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_cleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_cleaning.py" afterDir="false" />
