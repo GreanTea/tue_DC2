@@ -8,9 +8,8 @@ import seaborn as sns
 df2010 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2010-crime-data.csv')
 df2011 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2011-crime-data.csv')
 df2012 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2012-crime-data.csv')
-df2013 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2012-crime-data.csv')
-df2014 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2013-crime-data.csv')
-df2015 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2014-crime-data.csv')
+df2013 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2013-crime-data.csv')
+df2014 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2014-crime-data.csv')
 df2015 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2015-crime-data.csv')
 df2016 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2016-crime-data.csv')
 df2017 = pd.read_csv('/volumes/Seagate DNvG/School/dc2/data/2017-crime-data.csv')
@@ -33,16 +32,19 @@ df_all['Month'] = df_all['Month'].str[5:]
 # filters on LSOAs that correspond to Barnet
 barnet_df = df_all[df_all['LSOA name'].str.startswith('Barnet', na=False)]
 
-# visualise criminal activity per month -- only 2020 and 2021 for now
+# filter on Burglaries
+barnet_df = barnet_df[barnet_df['Crime type'] == 'Burglary']
+
+# visualise burglaries per month -- only 2020 and 2021 for now
 barnet_mdict = {}
 for month in sorted(set(barnet_df['Month'].values)):
     barnet_mdict[month] = barnet_df[barnet_df['Month'] == month].shape[0]
 
 plt.bar(range(len(barnet_mdict)), list(barnet_mdict.values()), tick_label=list(barnet_mdict.keys()))
-plt.title('Crimes in Barnet per month');
+plt.title('Burglaries in Barnet per month');
 plt.show()
 
-# heatmap that shows crime percentage in Barnet for each LSOA per month
+# heatmap that shows burglary percentage in Barnet for each LSOA per month
 
 # dictionary with, for each lsoa, another dictionary for each month
 barnet_ldict = {}
