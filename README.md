@@ -6,3 +6,5 @@ The project assumes existence of following files:
 1. Outcome csv file has been cleaned by removing all the rows that are not from Barnet and augmenting all the cleaned data at the end
 2. Street csv file has been cleaned by removing all the rows that are not from Barnet and augmenting all the cleaned data at the end
 3. Stop_Search csv file has been cleaned by removing all the rows that are not part of "Stolen goods"(Burglary) and has further investigations
+
+arima.py => performs ARIMA forecasting on final.csv  p.s. ARIMA is a method for forecasting or predicting future outcomes based on a historical time series
