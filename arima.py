@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 import numpy as np
@@ -24,3 +23,5 @@ rmse = np.sqrt(mse)
 print("MAE:", mae)
 print("MSE:", mse)
 print("RMSE:", rmse)
+
+
