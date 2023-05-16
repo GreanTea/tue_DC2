@@ -24,4 +24,3 @@ print("MAE:", mae)
 print("MSE:", mse)
 print("RMSE:", rmse)
 
-
