@@ -29,13 +29,30 @@ barnet_df = df_all[df_all['LSOA name'].str.startswith('Barnet', na=False)]
 burglary_df = barnet_df[barnet_df['Crime type'] == 'Burglary']
 drugs_df = barnet_df[barnet_df['Crime type'] == 'Drugs']
 
-burg_drug_df = pd.DataFrame(columns=['Year', 'Burglary', 'Drugs'])
+burg_drug_ydf = pd.DataFrame(columns=['Year', 'Burglary', 'Drugs'])
 for year in sorted(set(barnet_df['Year'].values)):
     df_row = pd.Series((year, burglary_df[burglary_df['Year'] == year].shape[0],
                         drugs_df[drugs_df['Year'] == year].shape[0]), index=['Year', 'Burglary', 'Drugs'])
-    burg_drug_df = pd.concat([burg_drug_df, pd.DataFrame([df_row])], ignore_index=True)
+    burg_drug_ydf = pd.concat([burg_drug_ydf, pd.DataFrame([df_row])], ignore_index=True)
+burg_drug_ydf = burg_drug_ydf.apply(pd.to_numeric)
+corr_bdy = burg_drug_ydf['Burglary'].corr(burg_drug_ydf['Drugs'])
 
-burg_drug_df = burg_drug_df.apply(pd.to_numeric)
+burg_drug_mdf = pd.DataFrame(columns=['Month', 'Burglary', 'Drugs'])
+for month in sorted(set(barnet_df['Month'].values)):
+    df_row = pd.Series((month, burglary_df[burglary_df['Month'] == month].shape[0],
+                        drugs_df[drugs_df['Month'] == month].shape[0]), index=['Month', 'Burglary', 'Drugs'])
+    burg_drug_mdf = pd.concat([burg_drug_mdf, pd.DataFrame([df_row])], ignore_index=True)
+burg_drug_mdf = burg_drug_mdf.apply(pd.to_numeric)
+corr_bdm = burg_drug_mdf['Burglary'].corr(burg_drug_mdf['Drugs'])
 
-corr_bd = burg_drug_df['Burglary'].corr(burg_drug_df['Drugs'])
-print(corr_bd)
+plt.scatter(burg_drug_ydf['Drugs'].values, burg_drug_ydf['Burglary'].values)
+plt.xlabel('Drug offenses in Barnet in a year');
+plt.ylabel('Burglary offenses in Barnet in a year');
+plt.annotate('Correlation = {}'.format(corr_bdy), xy=(100, 2000));
+plt.show()
+
+plt.scatter(burg_drug_mdf['Drugs'].values, burg_drug_mdf['Burglary'].values)
+plt.xlabel('Drug offenses in Barnet in a month');
+plt.ylabel('Burglary offenses in Barnet in a month');
+plt.annotate('Correlation = {}'.format(corr_bdm), xy=(725, 4000));
+plt.show()
