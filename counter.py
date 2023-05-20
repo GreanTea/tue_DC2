@@ -18,16 +18,16 @@ csv_dict= dict()
 directory = 'data/all/street/cleaned'
 
 #Iterating over files in directory
-#for filename in os.listdir(directory):
-#    f = os.path.join(directory, filename)
-#    #Checking if it is a file
-#    year_f = f[len(directory)+1:len(directory)+5]
-#    if os.path.isfile(f):
-#        if year_f not in csv_dict.keys():
-#            csv_dict[year_f] = len(pd.read_csv(f))
-#        else:
-#            csv_dict[year_f] += len(pd.read_csv(f))
-#print(csv_dict)
+for filename in os.listdir(directory):
+    f = os.path.join(directory, filename)
+    #Checking if it is a file
+    year_f = f[len(directory)+1:len(directory)+5]
+    if os.path.isfile(f):
+        if year_f not in csv_dict.keys():
+            csv_dict[year_f] = len(pd.read_csv(f))
+        else:
+            csv_dict[year_f] += len(pd.read_csv(f))
+print(csv_dict)
 
 #str='data/all/street\\2010_12-metropolitan-street.csv'
 #print(str[16:20])
@@ -41,7 +41,7 @@ outcomes_dict = {'2012': 406151, '2013': 742526, '2014': 645386, '2015': 669400,
 #print(list(street_dict.values()))
 
 f= plt.figure()
-plt.bar(list(street_dict.keys()), list(street_dict.values()))
+plt.bar(list(csv_dict.keys()), list(csv_dict.values()))
 f.set_figwidth(10)
 plt.xlabel('Year')
 plt.ylabel('Amount of burglaries')
