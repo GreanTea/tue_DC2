@@ -1,15 +1,15 @@
 import pandas as pd
 import geopandas as gpd
-import plotly.express as px
 import dash
-from dash import dcc, html
 import plotly.graph_objs as go
 import folium
-from folium.plugins import HeatMap
 import os
-from pathlib import Path
 from datetime import datetime
 from matplotlib.pyplot import figure
+import geopandas as gpd
+import requests
+import folium
+from shapely.geometry import Polygon
 
 now = datetime.now()
 fig = figure(figsize=(9, 4), dpi=80)
@@ -20,6 +20,8 @@ gdf = gpd.read_file('data/London_Ward.shp')
 df2020 = pd.read_csv('data/edited/2020-crime-data.csv')
 df2021 = pd.read_csv('data/edited/2021-crime-data.csv')
 df2022 = pd.read_csv('data/edited/2022-crime-data.csv')
+
+# print hello
 
 
 
@@ -90,3 +92,54 @@ crime_counts = df2020['Crime type'].value_counts()
 
 # Print the result
 print(fig.show())
+
+#Creating map using requested api from database police that shows ward and population density per ward
+#other information can be added later
+
+#list of wards
+wards = ['Barnet Vale', 'Brunswich Park', 'Burnt Oak', 'Childs Hill', 'Colindale North', 'Colindale South', 'Cricklewood', 'East Barnet', 'East Finchley', 'Edgware', 'Edgwarebury', 'Finchley Church End', 'Friern Barnet', 'Garden Suburb', 'Golders Green', 'Hendon', 'High Barnet', 'Mill Hill', 'Totteridge and Woodside', 'Underhill', 'West Finchley', 'West Hendon', 'Whetstone', 'Woodhouse']
+
+#list of all ward ids
+barnet_ids = []
+for d in response.json():
+    if d['name'] in wards:
+        barnet_ids.append(d['id'])
+
+#df with the id and name of each neighbourhood from requested api data
+response = requests.get("https://data.police.uk/api/metropolitan/neighbourhoods")
+barnet_df = pd.DataFrame(response.json())
+barnet_df = barnet_df[barnet_df['name'].isin(wards)]
+barnet_df = barnet_df.set_index('id')
+#barnet_df
+
+#requests the boundaries per ward
+def bounds(x):
+    bound = requests.get(f"https://data.police.uk/api/metropolitan/{x}/boundary").json()
+    bound = [(float(d["latitude"]), float(d["longitude"])) for d in bound]
+    return bound
+
+barnet_df['boundaries'] = barnet_df.apply(lambda x: bounds(x.name), axis=1)
+barnet_df.drop(index='E05013545', inplace=True)
+
+#adding column with population density per ward /km2 based on data of 2021
+values = [4.797, 8.584, 6.219, 12.089, 11.900, 5.135, 4.676, 6.590, 3.699, 2.491, 6.306, 6.679, 3.067, 9.345, 6.528, 1.381, 2.347, 1.519, 5.861, 7.908, 5.473, 4.245, 6.771]
+barnet_df['population density(/km2)'] = values
+#barnet_df
+
+#create map by selecting the boundaries of each ward and plotting a polygon and adding those to a map
+m = folium.Map(location=[51.604341, -0.202671], zoom_start=15)
+for index, row in barnet_df.iterrows():
+    polygon = folium.Polygon(
+        locations=row['boundaries'],
+        tooltip='Ward name: {} <br>Population Density: {} per km²'.format(row['name'], row['population density(/km2)']),
+        color='red',
+        fill_color='blue',
+        fill_opacity=0.2,
+        weight=2,
+    )
+    polygon.add_to(m)
+
+# Display the map
+#m
+
+
