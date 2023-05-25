@@ -9,6 +9,7 @@ from prophet.plot import plot_plotly, plot_components_plotly, add_changepoints_t
 #                                         mean,
 #                                         seasonal_naive)
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from sklearn.metrics import mean_squared_error
 
 
 
@@ -53,6 +54,9 @@ plt.title('Detrended amount of burglaries per month')
 
 residuals = df_temp['y'] - forecast['yhat']
 fig_acf = plot_acf(residuals, lags =40)
+
+MSE = mean_squared_error(df_temp['y'], forecast['yhat'])
+print("The mean squared error is {}".format(MSE))
 
 fig_pacf = plot_pacf(residuals, lags =40)
 
