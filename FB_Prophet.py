@@ -10,6 +10,7 @@ from prophet.plot import plot_plotly, plot_components_plotly, add_changepoints_t
 #                                         seasonal_naive)
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from sklearn.metrics import mean_squared_error
+import numpy as np
 
 
 
@@ -31,19 +32,25 @@ df_temp = pd.read_csv('data/final.csv')[['ds','y']]
 #    df_temp['ds'][x]= get_date_from_index(x)
 
 
-print(df_temp)
 df_temp['cap']=700
-m= Prophet(growth='logistic')
-m.fit(df_temp)
 
-future = m.make_future_dataframe(periods=0, freq='m')
+df_train = df_temp[:-12]
+df_test = df_temp[-12:]
+
+print(df_train)
+print(df_test)
+
+m= Prophet(growth='logistic')
+m.fit(df_train)
+
+future = m.make_future_dataframe(periods=12, freq='m')
 future['cap']= 700
 print(future)
 
 forecast = m.predict(future)
 for col in ['yhat', 'yhat_lower', 'yhat_upper']:
     forecast[col] = forecast[col].clip(lower=0.0)
-print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']])
+print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']][-12:])
 print(forecast['trend'])
 
 fig0 = plt.figure()
@@ -52,13 +59,20 @@ ax.plot(df_temp['ds'], (df_temp['y']-forecast['trend']))
 
 plt.title('Detrended amount of burglaries per month')
 
-residuals = df_temp['y'] - forecast['yhat']
-fig_acf = plot_acf(residuals, lags =40)
+residuals = df_test['y'] - forecast['yhat'][-12:]
+#fig_acf = plot_acf(residuals, lags =40)
 
-MSE = mean_squared_error(df_temp['y'], forecast['yhat'])
-print("The mean squared error is {}".format(MSE))
+print(residuals)
+mae = np.mean(np.abs(df_test['y'] - forecast['yhat'][-12:]))
 
-fig_pacf = plot_pacf(residuals, lags =40)
+mse = np.mean((df_test['y'] - forecast['yhat'][-12:]) ** 2)
+
+rmse = np.sqrt(mse)
+
+print('MAE is {}'.format(mae),'MSE is ', mse,'RMSE is ', rmse)
+print(mae)
+
+#fig_pacf = plot_pacf(residuals, lags =40)
 
 fig1 = m.plot(forecast)
 
@@ -66,8 +80,4 @@ a=add_changepoints_to_plot(fig1.gca(), m, forecast)
 
 fig2 = m.plot_components(forecast)
 
-plot_plotly(m, forecast)
-
-plot_components_plotly(m, forecast)
-
-plt.show()
+#plt.show()

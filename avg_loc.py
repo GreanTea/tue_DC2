@@ -4,58 +4,39 @@ import fnmatch
 import shutil
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import combinations
+from scipy.stats import pearsonr, ttest_ind
 
-avg_loc = pd.DataFrame()
 
-directory = 'data/all/street/cleaned'
+df_string = pd.read_csv('data/stringency.csv')
+df_string_UK = df_string[df_string['location']=='United Kingdom']
+unnecessary = list(df_string_UK.columns)
+unnecessary.remove("stringency_index")
+unnecessary.remove('date')
+df_new = df_string_UK.drop(columns=unnecessary)
 
-#for filename in os.listdir(directory):
-#    f = os.path.join(directory, filename)
-#    time_f = f[len(directory)+1:len(directory)+8]
-#    df_temp = pd.read_csv(f)
-#    if os.path.isfile(f):
-#        avg_loc['Longitude'] = df_temp['Longitude'].mean(), df_temp['Latitude'].mean())
+df_new['date'] = pd.to_datetime(df_new['date'])
 
-# Initialize an empty dataframe to hold the results
-data_list = list()
+df_first_day=df_new[df_new['date'].dt.is_month_start]
 
-# Iterate over files in the directory
-for filename in os.listdir(directory):
-    if filename.endswith('.csv') and 'metropolitan-street' in filename:
-        filepath = os.path.join(directory, filename)
+df_first_day['date'] = df_first_day['date'].dt.strftime('%Y-%m')
 
-        # Read in the CSV file as a pandas dataframe
-        df = pd.read_csv(filepath)
+df_final = pd.read_csv('data/final.csv')
 
-        # Calculate the average longitude and latitude of the dataframe
-        avg_longitude = df['Longitude'].mean()
-        avg_latitude = df['Latitude'].mean()
+print(df_final)
 
-        # Append the results to the results dataframe
-        data_list.append({'filename': filename[:7],
-                          'avg_longitude': avg_longitude,
-                          'avg_latitude': avg_latitude})
+merged_df = pd.merge(df_final, df_first_day, left_on='ds', right_on='date', how='left')[['ds','y','stringency_index']]
 
-results_df = pd.DataFrame(data_list)
+cleaned_df = merged_df.fillna(0)
 
-results_df.set_index('filename', inplace=True)
+print(cleaned_df)
 
-cmap = plt.cm.get_cmap('cool', len(os.listdir(directory)))
-filenames = list(results_df.index.values)
-print(results_df)
-fig, ax= plt.subplots()
-for i, filename in enumerate(filenames):
-    color = cmap(i)
-    longitude = results_df.loc[filename, 'avg_longitude']
-    latitude = results_df.loc[filename, 'avg_latitude']
-    ax.scatter(longitude, latitude, color=color)
 
-    #if i < len(filenames) - 1:
-    #    next_filename = filenames[i + 1]
-    #    next_longitude = results_df.loc[next_filename, 'avg_longitude']
-    #    next_latitude = results_df.loc[next_filename, 'avg_latitude']
-    #    ax.plot([longitude, next_longitude], [latitude, next_latitude], color=color)
-plt.xlabel('Month')
-plt.ylabel('Location')
-plt.title('The average location of burglaries per month in Barnet')
-plt.show()
+t, p = ttest_ind(cleaned_df['y'], cleaned_df['stringency_index'])
+print(p)
+
+print(cleaned_df['y'].corr(cleaned_df['stringency_index']))
+
+print(pearsonr(cleaned_df['y'], cleaned_df['stringency_index']))
+
+print(cleaned)
