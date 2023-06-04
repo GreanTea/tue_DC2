@@ -99,4 +99,13 @@ for column in df_final.columns.values:
                     df_final_ward[wrd] += df_final[column]
 print(df_final_ward)
 
-df_final_ward.to_csv('final_ward.csv')
+#df_final_ward.to_csv('final_ward.csv')
+mean_dict = dict()
+for ward in df_final_ward.columns.values[4:]:
+    mean_dict[ward] = df_final_ward[ward].mean()
+
+print(mean_dict)
+df_means = pd.DataFrame({'ward': mean_dict.keys(), 'means': mean_dict.values()})
+print(df_means.sort_values(by='means', ascending=False))
+print(sum(df_means['means']))
+print(df_means['means'].mean())
