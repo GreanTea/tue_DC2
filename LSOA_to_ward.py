@@ -88,11 +88,9 @@ for column in df_final.columns.values:
     else:
         for wrd in ward.keys():
             if column in ward[wrd]:
-                print(column, wrd)
 #                if df_final_ward.loc[1, wrd].isnull:
 #                    df_final_ward[wrd] = df_final[column]
 #                else:
-                print(df_final_ward.loc[1,wrd])
                 if math.isnan(df_final_ward.loc[1,wrd]):
                     df_final_ward[wrd] = df_final[column]
                 else:
@@ -101,11 +99,52 @@ print(df_final_ward)
 
 #df_final_ward.to_csv('final_ward.csv')
 mean_dict = dict()
+print(df_final_ward['Month'].isin([7,8,9]))
 for ward in df_final_ward.columns.values[4:]:
-    mean_dict[ward] = df_final_ward[ward].mean()
+    mean_dict[ward] = [df_final_ward[(df_final_ward['Month'].isin([7,8,9]))][ward].mean(), df_final_ward[(df_final_ward['Month'].isin([10,11,12]))][ward].mean()]
 
+mean_jul = []
+mean_oct = []
+
+for i in mean_dict.values():
+    mean_jul.append(i[0])
+    mean_oct.append(i[1])
+
+print(mean_oct)
 print(mean_dict)
-df_means = pd.DataFrame({'ward': mean_dict.keys(), 'means': mean_dict.values()})
-print(df_means.sort_values(by='means', ascending=False))
-print(sum(df_means['means']))
-print(df_means['means'].mean())
+df_means = pd.DataFrame({'ward': mean_dict.keys(), 'mean_jul': mean_jul, 'mean_oct': mean_oct})
+df_means[['ward','mean_jul']].sort_values(by='mean_jul', ascending=False).to_excel('Means-July.xlsx')
+df_means[['ward','mean_oct']].sort_values(by='mean_oct', ascending=False).to_excel('Means-Oct.xlsx')
+print(df_means['mean_jul'].mean())
+
+def reduce_ratio(load_list, total_num, min_num=1):
+    output = [min_num for _ in load_list]
+    total_num -= sum(output)
+    if total_num < 0:
+        raise Exception('Could not satisfy min_num')
+    elif total_num == 0:
+        return output
+
+    nloads = len(load_list)
+    for ii in range(nloads):
+        load_sum = float(sum(load_list))
+        load = load_list.pop(0)
+        value = int(round(total_num*load/load_sum))
+        output[ii] += value
+        total_num -= value
+    return output
+
+
+
+distr_jul = reduce_ratio(mean_jul, 57, 0)
+distr_oct = reduce_ratio(mean_oct, 57, 0)
+
+print(len(distr_jul))
+print(len(distr_oct))
+print(len(mean_dict.keys()))
+df_assigned = pd.DataFrame({'Ward' : mean_dict.keys(), 'Assigned Officers July-Sept' : distr_jul, 'Assigned Officers Oct-Dec' : distr_oct})
+print(df_assigned[['Ward','Assigned Officers July-Sept']].sort_values(by='Assigned Officers July-Sept', ascending=False))
+print(df_assigned[['Ward','Assigned Officers Oct-Dec']].sort_values(by='Assigned Officers Oct-Dec', ascending=False))
+#, 'Assigned Officers July-Sept' : reduce_ratio(mean_jul, 57, 0)
+
+

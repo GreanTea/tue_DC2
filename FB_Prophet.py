@@ -69,7 +69,9 @@ mse = np.mean((df_test['y'] - forecast['yhat'][-12:]) ** 2)
 
 rmse = np.sqrt(mse)
 
-print('MAE is {}'.format(mae),'MSE is ', mse,'RMSE is ', rmse)
+mape = np.mean(np.abs((df_test['y'] - forecast['yhat'])/df_test['y']))*100
+
+print('MAPE is {}'.format(mape),'MSE is ', mse,'RMSE is ', rmse)
 print(mae)
 
 #fig_pacf = plot_pacf(residuals, lags =40)
