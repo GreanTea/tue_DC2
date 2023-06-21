@@ -8,3 +8,5 @@ The project assumes existence of following files:
 3. Stop_Search csv file has been cleaned by removing all the rows that are not part of "Stolen goods"(Burglary) and has further investigations
 
 arima.py => performs ARIMA forecasting on final.csv  p.s. ARIMA is a method for forecasting or predicting future outcomes based on a historical time series
+
+arima.py => performs finds MSE, RMSE, MAE and MAPE statistics of the model
